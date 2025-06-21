@@ -15,7 +15,7 @@ export default function menu() {
     return (
         <View style={menuStyles.container}>
                 {screens.map(screen => (
-                    <View style={menuStyles.button}>
+                    <View style={menuStyles.button} key={screen.name}>
                         <Text style={menuStyles.buttonLabel}>
                             {screen.name}
                         </Text>
@@ -30,7 +30,6 @@ const menuStyles = StyleSheet.create({
         flex: 1,
         backgroundColor: 'pink',
         justifyContent: 'center',
-        // alignItems: 'center',
         padding: 30,
     },
 
@@ -45,5 +44,6 @@ const menuStyles = StyleSheet.create({
         fontSize: 25,
         textAlign: 'center',
         color: 'darkslategrey',
+        fontFamily: 'Virgil',
     }
 });
