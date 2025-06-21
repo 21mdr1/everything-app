@@ -51,10 +51,10 @@ export default function daily() {
                     <Text style={dailyStyles.sectionItem}>item 5</Text>
                 </View>
             </View>
-            <View>
-                <Text>Notes</Text>
-                <View>
-                    <Text>Notes here</Text>
+            <View style={dailyStyles.sectionContainer}>
+                <Text style={dailyStyles.sectionLabel}>Notes</Text>
+                <View style={dailyStyles.sectionItemContainer}>
+                    <Text style={dailyStyles.sectionParagraph}>Notes here</Text>
                 </View>
             </View>
             </ScrollView>
@@ -79,6 +79,7 @@ const dailyStyles = StyleSheet.create({
 
     focusText: {
         marginBottom: 5,
+        textTransform: "uppercase",
     },
 
     focusInput: {
@@ -95,7 +96,8 @@ const dailyStyles = StyleSheet.create({
     },
 
     sectionLabel: {
-        marginBottom: 5
+        marginBottom: 5,
+        textTransform: "uppercase",
     },
 
     sectionItemContainer: {
@@ -112,5 +114,11 @@ const dailyStyles = StyleSheet.create({
         paddingVertical: 2,
         borderBottomColor: 'black',
         borderBottomWidth: 1,
+    },
+
+    sectionParagraph: {
+        fontFamily: 'Virgil',
+        margin: 3,
+        minHeight: 80,
     }
 });
