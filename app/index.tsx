@@ -20,7 +20,13 @@ function Button({ name, path }: { name: string; path: paths }) {
     const router = useRouter();
 
     return (
-        <Pressable style={menuStyles.button} key={name} onPress={() => router.navigate(path) }>
+        <Pressable 
+        style={({ pressed }) => 
+            pressed ? [menuStyles.button, menuStyles.pressedBackground] : 
+                [menuStyles.button, menuStyles.unpressedBackground]} 
+            key={name} 
+            onPress={ () => router.navigate(path) }
+        >
             <Text style={menuStyles.buttonLabel}>
                 {name}
             </Text>
@@ -33,6 +39,7 @@ export default function Menu() {
     return (
         <View style={menuStyles.container}>
             <FlatList 
+                contentContainerStyle={menuStyles.list}
                 data={screens}
                 renderItem={({ item }) => <Button name={item.name} path={item.path} />}
             />
@@ -46,13 +53,27 @@ const menuStyles = StyleSheet.create({
         backgroundColor: 'pink',
         justifyContent: 'center',
         padding: 30,
+        paddingTop: 50,
+    },
+
+    list: {
+        flex: 1,
+        justifyContent: 'center',
     },
 
     button: {
-        backgroundColor: 'darkseagreen',
+        // backgroundColor: 'darkseagreen',
         padding: 15,
         margin: 15,
         borderRadius: 20,
+    },
+
+    unpressedBackground: {
+        backgroundColor: 'darkseagreen',
+    },
+
+    pressedBackground: {
+        backgroundColor: 'olivedrab',
     },
 
     buttonLabel: {
