@@ -1,4 +1,4 @@
-import { Tabs } from 'expo-router';
+import { Tabs, useRouter } from 'expo-router';
 import React from 'react';
 import { Platform } from 'react-native';
 
@@ -11,10 +11,13 @@ import Header from '@/components/header';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const router = useRouter();
+
+  const routerFn = () => {router.navigate('/')}
 
   return (
     <>
-      <Header />
+      <Header routerFn={ routerFn } />
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
