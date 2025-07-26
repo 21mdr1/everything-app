@@ -21,8 +21,8 @@ function Button({ name, path }: { name: string; path: paths }) {
 
     return (
         <Pressable 
-        style={({ pressed }) => 
-            pressed ? [menuStyles.button, menuStyles.pressedBackground] : 
+            style={({ pressed }) => 
+                pressed ? [menuStyles.button, menuStyles.pressedBackground] : 
                 [menuStyles.button, menuStyles.unpressedBackground]} 
             key={name} 
             onPress={ () => router.navigate(path) }
