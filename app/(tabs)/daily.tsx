@@ -1,64 +1,133 @@
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import { View, Text, StyleSheet, SectionList, TextInput, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
+const items = [
+    {
+        title: 'Today\'s Focus',
+        name: 'focus',
+        data: [
+            {placeholder: 'focus goes here', key: '1'},
+        ],
+    },
+    {
+        title: 'My gamechanger goal:',
+        name: 'gamechanger',
+        data: [
+            {placeholder: 'first goal', key: '2'},
+            {placeholder: 'second goal', key: '3'},
+            {placeholder: 'third goal', key: '4'},
+        ]
+    },
+    {
+        title: 'Personal',
+        name: 'personal',
+        data: [
+            {placeholder: 'item 1', key: '5'},
+            {placeholder: 'item 2', key: '6'},
+            {placeholder: 'item 3', key: '7'},
+            {placeholder: 'item 4', key: '8'},
+            {placeholder: 'item 5', key: '9'},
+        ]
+    },
+    {
+        title: 'Work',
+        name: 'work',
+        data: [
+            {placeholder: 'item 1', key: '10'},
+            {placeholder: 'item 2', key: '11'},
+            {placeholder: 'item 3', key: '12'},
+            {placeholder: 'item 4', key: '13'},
+            {placeholder: 'item 5', key: '14'},
+        ]
+    },
+    {
+        title: 'Notes',
+        name: 'notes',
+        data: [
+            {placeholder: 'notes here', key: '15'},
+        ],
+    },
+]
+
+function Item({item: { placeholder, key }, index, section}: {item: { placeholder: string, key: string }, index: number, section: any}, inputs: any, updateInputs: (i: string, j: string) => void, completed: any, updateCompleted: (i: string, j: boolean) => void) {
+    return (
+        <>
+        {section.name === 'focus' ? 
+        (<TextInput 
+            style={dailyStyles.focusInput}
+            placeholder={placeholder}
+            value={inputs[key]}
+            onChangeText={(value) => {updateInputs(key, value)}}
+        />) : section.name === 'notes' ? 
+        (<TextInput 
+            style={dailyStyles.sectionParagraph}
+            placeholder={ placeholder }
+            value={inputs[key]}
+            onChangeText={(value) => {updateInputs(key, value)}}
+            multiline
+        />) :
+        (<View style={
+            index === 0 ? dailyStyles.sectionItemFirstBox : 
+            index === section.data.length - 1 ? dailyStyles.sectionItemLastBox :
+            dailyStyles.sectionItemBox}
+        >
+            <Pressable style={({ pressed }) => [dailyStyles.sectionItemCheck, pressed && dailyStyles.sectionItemCheckBackground] } onPress={() => updateCompleted(key, !completed[key])}>
+                { completed[key] && <Ionicons name="checkmark-outline" size={20} color="black" /> }
+            </Pressable>
+            <TextInput 
+                style={[dailyStyles.sectionItemText, completed[key] && dailyStyles.sectionItemTextDec]}
+                placeholder={placeholder}
+                value={inputs[key]}
+                onChangeText={(value) => {updateInputs(key, value)}}
+            />
+        </View>)}
+        </>
+    );
+}
 
 export default function daily() {
+    const [ inputs, setInputs ] = useState({
+        '1': '',
+        '2': '', '3': '', '4': '', 
+        '5': '', '6': '', '7': '', '8': '', '9': '',
+        '10': '', '11': '', '12': '', '13': '', '14': '',
+        '15': '',
+    });
+    const [ completed, setCompleted ] = useState({
+        '1': false,
+        '2': false, '3': false, '4': false, 
+        '5': false, '6': false, '7': false, '8': false, '9': false,
+        '10': false, '11': false, '12': false, '13': false, '14': false,
+        '15': false,
+    });
+
+    function updateInputs(name: string, value: string) {
+        setInputs(prev => ({...prev, [name]: value}));
+    }
+
+    function updateCompleted(name: string, value: boolean) {
+        setCompleted(prev => ({...prev, [name]: value}))
+    }
+
+
     return (
-        <View style={dailyStyles.main}>
-            <ScrollView style={dailyStyles.scroller}>
-            <View style={dailyStyles.focusContainer}>
-                <Text style={dailyStyles.focusText}>
-                    Today's Focus
-                </Text>
-                <Text style={dailyStyles.focusInput}>
-                    focus goes here
-                </Text>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={dailyStyles.main}>
+            <View style={dailyStyles.scroller}>
+
+                <SectionList 
+                    keyboardDismissMode='on-drag'
+                    sections={items}
+                    renderSectionHeader={({section: {title}}) => 
+                        <Text style={dailyStyles.sectionLabel}>{ title }</Text>}
+                    ItemSeparatorComponent={() => 
+                        <View style={dailyStyles.separator} />}
+                    renderItem={({ item, index, section }) => Item({ item, index, section }, inputs, updateInputs, completed, updateCompleted)}
+                    indicatorStyle='white'
+                />
+
             </View>
-            <View style={dailyStyles.sectionContainer}>
-                <Text style={dailyStyles.sectionLabel}>
-                    My Gamechanger Goal:
-                </Text>
-                <View style={dailyStyles.sectionItemContainer}>
-                    <Text style={dailyStyles.sectionItem}>
-                        first goal
-                    </Text>
-                    <Text style={dailyStyles.sectionItem}>
-                        second goal
-                    </Text>
-                    <Text style={dailyStyles.sectionItem}>
-                        third goal
-                    </Text>
-                </View>
-            </View>
-            <View style={dailyStyles.sectionContainer}>
-                <Text style={dailyStyles.sectionLabel}>
-                    Personal
-                </Text>
-                <View style={dailyStyles.sectionItemContainer}>
-                    <Text style={dailyStyles.sectionItem}>item 1</Text>
-                    <Text style={dailyStyles.sectionItem}>item 2</Text>
-                    <Text style={dailyStyles.sectionItem}>item 3</Text>
-                    <Text style={dailyStyles.sectionItem}>item 4</Text>
-                    <Text style={dailyStyles.sectionItem}>item 5</Text>
-                </View>
-            </View>
-            <View style={dailyStyles.sectionContainer}>
-                <Text style={dailyStyles.sectionLabel}>Work</Text>
-                <View style={dailyStyles.sectionItemContainer}>
-                    <Text style={dailyStyles.sectionItem}>item 1</Text>
-                    <Text style={dailyStyles.sectionItem}>item 2</Text>
-                    <Text style={dailyStyles.sectionItem}>item 3</Text>
-                    <Text style={dailyStyles.sectionItem}>item 4</Text>
-                    <Text style={dailyStyles.sectionItem}>item 5</Text>
-                </View>
-            </View>
-            <View style={dailyStyles.sectionContainer}>
-                <Text style={dailyStyles.sectionLabel}>Notes</Text>
-                <View style={dailyStyles.sectionItemContainer}>
-                    <Text style={dailyStyles.sectionParagraph}>Notes here</Text>
-                </View>
-            </View>
-            </ScrollView>
-        </View>
+        </KeyboardAvoidingView>
     );
 }
 
@@ -73,15 +142,6 @@ const dailyStyles = StyleSheet.create({
         paddingHorizontal: 20,
     },
 
-    focusContainer: {
-        paddingVertical: 5,
-    },
-
-    focusText: {
-        marginBottom: 5,
-        textTransform: "uppercase",
-    },
-
     focusInput: {
         fontFamily: 'Virgil',
         borderColor: 'black',
@@ -91,34 +151,70 @@ const dailyStyles = StyleSheet.create({
         paddingHorizontal: 15,
     },
 
-    sectionContainer: {
-        paddingVertical: 5,
-    },
-
     sectionLabel: {
         marginBottom: 5,
         textTransform: "uppercase",
+        paddingTop: 10,
     },
 
-    sectionItemContainer: {
-        borderRadius: 5,
+    sectionItemBox: {
+        flexDirection: 'row',
+        borderLeftColor: 'black', 
+        borderLeftWidth: 1,
+        borderRightColor: 'black', 
+        borderRightWidth: 1,
+    },
+
+    sectionItemFirstBox: {
+        flexDirection: 'row',
+        borderColor: 'black',
         borderWidth: 1,
-        paddingLeft: 20,
+        borderBottomWidth: 0,
+        borderTopLeftRadius: 5,
+        borderTopRightRadius: 5,
     },
 
-    sectionItem: {
+    sectionItemLastBox: {
+        flexDirection: 'row',
+        borderColor: 'black',
+        borderWidth: 1,
+        borderTopWidth: 0,
+        borderBottomLeftRadius: 5,
+        borderBottomRightRadius: 5,
+    },
+
+    sectionItemText: {
         fontFamily: 'Virgil',
         borderLeftColor: 'black', 
         borderLeftWidth: 1,
         paddingLeft: 7,
         paddingVertical: 2,
-        borderBottomColor: 'black',
-        borderBottomWidth: 1,
+    },
+
+    sectionItemTextDec: {
+        textDecorationLine: 'line-through',
+        textDecorationColor: 'black',
+        textDecorationStyle: 'solid',
+    },
+
+    sectionItemCheck: {
+        width: 20,
+    },
+
+    sectionItemCheckBackground: {
+        backgroundColor: 'gainsboro',
+    },
+
+    separator: {
+        height: 1,
+        backgroundColor: 'black',
     },
 
     sectionParagraph: {
         fontFamily: 'Virgil',
-        margin: 3,
         minHeight: 80,
+        borderRadius: 5,
+        borderWidth: 1,
+        paddingLeft: 20,
     }
 });
