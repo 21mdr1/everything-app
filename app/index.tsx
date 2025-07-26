@@ -1,9 +1,10 @@
 import { useRouter } from 'expo-router';
 import { View, Text, StyleSheet, Pressable, FlatList } from 'react-native';
+import { paths } from '@/utils/types';
 
 interface screen {
     name: string;
-    path: '/daily' | '/weekly' | '/projects' | '/' | '/storage' | '/packing';
+    path: paths;
 }
 
 const screens: screen[] = [
@@ -15,7 +16,7 @@ const screens: screen[] = [
     { name: 'Packing', path: '/packing' }
 ]
 
-function Button({ name, path }: { name: string; path: screen["path"]}) {
+function Button({ name, path }: { name: string; path: paths }) {
     const router = useRouter();
 
     return (
