@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SectionList, TextInput, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const items = [
     {
@@ -50,7 +51,22 @@ const items = [
     },
 ]
 
-function Item({item: { placeholder, key }, index, section}: {item: { placeholder: string, key: string }, index: number, section: any}, inputs: any, updateInputs: (i: string, j: string) => void, completed: any, updateCompleted: (i: string, j: boolean) => void) {
+function Item({item: { placeholder, key }, index, section}: 
+    {
+        item: { 
+            placeholder: string, 
+            key: string 
+        }, 
+        index: number, 
+        section: any
+    }, 
+    inputs: any, 
+    updateInputs: (i: string, j: string) => void,
+    storeInputs: () => Promise<void>, 
+    completed: any, 
+    updateCompleted: (i: string, j: boolean) => void,
+    storeCompleted: () => Promise<void>,
+) {
     return (
         <>
         {section.name === 'focus' ? 
@@ -59,12 +75,14 @@ function Item({item: { placeholder, key }, index, section}: {item: { placeholder
             placeholder={placeholder}
             value={inputs[key]}
             onChangeText={(value) => {updateInputs(key, value)}}
+            onBlur={storeInputs}
         />) : section.name === 'notes' ? 
         (<TextInput 
             style={dailyStyles.sectionParagraph}
             placeholder={ placeholder }
             value={inputs[key]}
             onChangeText={(value) => {updateInputs(key, value)}}
+            onBlur={storeInputs}
             multiline
         />) :
         (<View style={
@@ -72,7 +90,11 @@ function Item({item: { placeholder, key }, index, section}: {item: { placeholder
             index === section.data.length - 1 ? dailyStyles.sectionItemLastBox :
             dailyStyles.sectionItemBox}
         >
-            <Pressable style={({ pressed }) => [dailyStyles.sectionItemCheck, pressed && dailyStyles.sectionItemCheckBackground] } onPress={() => updateCompleted(key, !completed[key])}>
+            <Pressable 
+                style={({ pressed }) => [dailyStyles.sectionItemCheck, pressed && dailyStyles.sectionItemCheckBackground] }
+                onPressIn={() => {updateCompleted(key, !completed[key])}}
+                onPressOut={storeCompleted}
+            >
                 { completed[key] && <Ionicons name="checkmark-outline" size={20} color="black" /> }
             </Pressable>
             <TextInput 
@@ -80,6 +102,7 @@ function Item({item: { placeholder, key }, index, section}: {item: { placeholder
                 placeholder={placeholder}
                 value={inputs[key]}
                 onChangeText={(value) => {updateInputs(key, value)}}
+                onBlur={storeInputs}
             />
         </View>)}
         </>
@@ -102,6 +125,29 @@ export default function daily() {
         '15': false,
     });
 
+    useEffect(() => {
+        async function getData() {
+            try {
+                const jsonValue = await AsyncStorage.getItem('dailyInputs');
+                jsonValue != null && setInputs(JSON.parse(jsonValue))
+            } catch (error) {
+                console.log(error)
+            }
+
+            try {
+                const jsonValue = await AsyncStorage.getItem('dailyCompleted');
+                jsonValue != null && setCompleted(JSON.parse(jsonValue))
+
+            } catch (error) {
+                console.log(error)
+            }
+        }
+
+        getData();
+        
+    },[]);
+
+
     function updateInputs(name: string, value: string) {
         setInputs(prev => ({...prev, [name]: value}));
     }
@@ -110,6 +156,22 @@ export default function daily() {
         setCompleted(prev => ({...prev, [name]: value}))
     }
 
+    async function storeInputs() {
+        try {
+            await AsyncStorage.setItem('dailyInputs', JSON.stringify(inputs))
+        } catch(error) {
+            console.log(error)
+        }
+    }
+
+    async function storeCompleted() {
+        try {
+            const JSONdata = JSON.stringify(completed)
+            await AsyncStorage.setItem('dailyCompleted', JSONdata);
+        } catch(error) {
+            console.log(error)
+        }
+    }
 
     return (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={dailyStyles.main}>
@@ -122,7 +184,7 @@ export default function daily() {
                         <Text style={dailyStyles.sectionLabel}>{ title }</Text>}
                     ItemSeparatorComponent={() => 
                         <View style={dailyStyles.separator} />}
-                    renderItem={({ item, index, section }) => Item({ item, index, section }, inputs, updateInputs, completed, updateCompleted)}
+                    renderItem={({ item, index, section }) => Item({ item, index, section }, inputs, updateInputs, storeInputs, completed, updateCompleted, storeCompleted)}
                     indicatorStyle='white'
                 />
 
