@@ -9,6 +9,12 @@ import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import Header from '@/components/header';
 
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import Feather from '@expo/vector-icons/Feather';
+
+
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const router = useRouter();
@@ -33,45 +39,43 @@ export default function TabLayout() {
           }),
         }}>
         <Tabs.Screen
-          name="index"
-          options={{
-            title: 'Menu',
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
-          }}
-        />
-        <Tabs.Screen
           name="daily"
           options={{
             title: 'Daily',
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+            // tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+            tabBarIcon: ({ color }) => <FontAwesome5 name="clipboard" size={24} color={color} />,
           }}
         />
         <Tabs.Screen
           name="weekly"
           options={{
             title: 'Weekly',
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />
+            // tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />
+            tabBarIcon: ({ color }) => <AntDesign name="calendar" size={24} color={color} />
           }}
         />
         <Tabs.Screen
           name="packing"
           options={{
             title: 'Packing',
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />
+            // tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />
+            tabBarIcon: ({ color }) => <MaterialCommunityIcons name="bag-suitcase-outline" size={24} color={color} />
           }}
         />
         <Tabs.Screen
           name="storage"
           options={{
             title: 'Storage',
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />
+            // tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />
+            tabBarIcon: ({ color }) => <Feather name="box" size={24} color={color} />
           }}
         />
         <Tabs.Screen
           name="projects"
           options={{
             title: 'Projects',
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />
+            // tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />
+            tabBarIcon: ({ color }) => <AntDesign name="folderopen" size={24} color={color} />
           }}
         />
       </Tabs>
