@@ -53,12 +53,9 @@ const items = [
 
 function Item({item: { placeholder, key }, index, section}: 
     {
-        item: { 
-            placeholder: string, 
-            key: string 
-        }, 
+        item: typeof items[0]["data"][0],
         index: number, 
-        section: any
+        section: typeof items[0]
     }, 
     inputs: any, 
     updateInputs: (i: string, j: string) => void,
