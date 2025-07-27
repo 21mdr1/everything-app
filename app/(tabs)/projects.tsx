@@ -1,9 +1,9 @@
-import { View, ScrollView, Text, StyleSheet } from 'react-native';
+import { View, ScrollView, Text, StyleSheet, FlatList } from 'react-native';
 
 export default function Projects() {
     return (
-        <View>
+        <ScrollView>
 
-        </View>
+        </ScrollView>
     );
 }

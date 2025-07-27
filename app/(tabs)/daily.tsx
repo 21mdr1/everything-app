@@ -3,7 +3,31 @@ import { View, Text, StyleSheet, SectionList, TextInput, Pressable, KeyboardAvoi
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-const items = [
+const data = {
+    inputs: {
+        '1': '',
+        '2': '', '3': '', '4': '', 
+        '5': '', '6': '', '7': '', '8': '', '9': '',
+        '10': '', '11': '', '12': '', '13': '', '14': '',
+        '15': '',
+    },
+    completed: {
+        '1': false,
+        '2': false, '3': false, '4': false, 
+        '5': false, '6': false, '7': false, '8': false, '9': false,
+        '10': false, '11': false, '12': false, '13': false, '14': false,
+        '15': false,
+    }
+}
+
+const items: {
+    title: string,
+    name: string,
+    data: {
+        placeholder: string,
+        key: keyof typeof data["inputs"]
+    }[]
+}[] = [
     {
         title: 'Today\'s Focus',
         name: 'focus',
@@ -57,10 +81,10 @@ function Item({item: { placeholder, key }, index, section}:
         index: number, 
         section: typeof items[0]
     }, 
-    inputs: any, 
+    inputs: typeof data.inputs, 
     updateInputs: (i: string, j: string) => void,
     storeInputs: () => Promise<void>, 
-    completed: any, 
+    completed: typeof data.completed, 
     updateCompleted: (i: string, j: boolean) => void,
     storeCompleted: () => Promise<void>,
 ) {
@@ -107,20 +131,8 @@ function Item({item: { placeholder, key }, index, section}:
 }
 
 export default function daily() {
-    const [ inputs, setInputs ] = useState({
-        '1': '',
-        '2': '', '3': '', '4': '', 
-        '5': '', '6': '', '7': '', '8': '', '9': '',
-        '10': '', '11': '', '12': '', '13': '', '14': '',
-        '15': '',
-    });
-    const [ completed, setCompleted ] = useState({
-        '1': false,
-        '2': false, '3': false, '4': false, 
-        '5': false, '6': false, '7': false, '8': false, '9': false,
-        '10': false, '11': false, '12': false, '13': false, '14': false,
-        '15': false,
-    });
+    const [ inputs, setInputs ] = useState(data.inputs);
+    const [ completed, setCompleted ] = useState(data.completed);
 
     useEffect(() => {
         async function getData() {
