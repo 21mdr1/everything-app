@@ -251,6 +251,7 @@ const dailyStyles = StyleSheet.create({
         borderLeftWidth: 1,
         paddingLeft: 7,
         paddingVertical: 2,
+        flex: 1,
     },
 
     sectionItemTextDec: {
