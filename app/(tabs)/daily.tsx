@@ -175,8 +175,7 @@ export default function daily() {
 
     async function storeCompleted() {
         try {
-            const JSONdata = JSON.stringify(completed)
-            await AsyncStorage.setItem('dailyCompleted', JSONdata);
+            await AsyncStorage.setItem('dailyCompleted', JSON.stringify(completed));
         } catch(error) {
             console.log(error)
         }

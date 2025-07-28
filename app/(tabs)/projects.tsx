@@ -1,22 +1,35 @@
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Pressable } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
+import ProjectForm from '@/components/ProjectForm';
+
+interface IProject {
+    name: string,
+    description: string,
+    picture: string,
+    things: { name: string, done: boolean }[],
+    currentThing?: string,
+    tasks: {name: string, done: boolean }[],
+    currentTask?: string,
+    notes: string
+}
 
 
-const projects = [
+const projects: IProject[] = [
     {
         name: "Sample project 1",
         description: "this is a sample project",
         picture: "",
-        things: ["motivation"],
-        tasks: ["Start", "make a plan"],
+        things: [{ name: "motivation", done: false }],
+        tasks: [{ name: "Start", done: false }, { name: "make a plan", done: false }],
         notes: "this is a sample project uwu"
     },
     {
         name: "Sample project 2",
         description: "this is another sample project",
         picture: "",
-        things: ["something or other"],
-        tasks: ["finish", "think"],
+        things: [{ name: "something or other", done: false }],
+        tasks: [{name: "finish", done: false }, { name: "think", done: false }],
         notes: "we do be sampling"
     }
 ]
@@ -37,13 +50,58 @@ function Item({ name, description, picture }: typeof projects[0] ) {
 
 
 export default function Projects() {
+    const [ projectList, setProjectList ] = useState(projects);
+    const [ createProject, setCreateProject ] = useState(false);
+
+    async function storeProjects(projects: IProject[] = projectList) {
+        try {
+            await AsyncStorage.setItem('dailyInputs', JSON.stringify(projects))
+        } catch(error) {
+            console.log(error)
+        }
+    }
+
+    // useEffect(() => {
+    //     async function getProjects() {
+    //         try {
+    //             const jsonValue = await AsyncStorage.getItem('dailyInputs');
+    //             jsonValue != null && setProjectList(JSON.parse(jsonValue));
+                
+    //         } catch (error) {
+    //             console.log(error)
+    //         }
+    //     }
+
+    //     getProjects();
+    // }, []);
+
+    function handleProjectCreation(project: IProject) {
+        setProjectList(prev => { 
+            prev.push(project); 
+            storeProjects(prev);
+            return prev;
+        });
+        
+        setCreateProject(false);
+    }
+
     return (
         <View style={styles.projectList.main}>
-            <FlatList
-                data = {projects}
+            { createProject ? 
+            (<><FlatList
+                data = {projectList}
                 renderItem = {({item}) => Item(item)}
                 style = {styles.projectList.container}
             />
+            <Pressable 
+                style={({pressed}) => [styles.projectList.button, pressed && styles.projectList.pressedButton]}
+                onPress={() => {setCreateProject(true)}}
+            >
+                {/* TODO: add plus sign */}
+                <Text style={styles.projectList.buttonText}> Add Project </Text>
+            </Pressable></>) :
+            (<ProjectForm saveFunction={setProjectList} />)
+            }
         </View>
     );
 }
@@ -66,6 +124,7 @@ const styles = {
 
         title: {
             fontFamily: 'Virgil',
+            fontSize: 20,
         },
 
         description: {
@@ -85,9 +144,29 @@ const styles = {
             flex: 1,
             paddingTop: 50,
             paddingHorizontal: 25,
+            justifyContent: 'space-between',
+            paddingBottom: 60,
         },
+
         container: {
+            // backgroundColor: 'red',
             flex: 1,
+        },
+
+        button: {
+            backgroundColor: 'green',
+            paddingVertical: 15,
+            borderRadius: 15,
+        },
+
+        pressedButton: {
+            backgroundColor: 'darkgreen',
+        },
+
+        buttonText: {
+            fontFamily: 'Virgil',
+            fontSize: 20,
+            textAlign: 'center',
         }
     }),
 }

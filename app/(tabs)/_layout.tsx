@@ -55,11 +55,11 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="packing"
+          name="projects"
           options={{
-            title: 'Packing',
+            title: 'Projects',
             // tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />
-            tabBarIcon: ({ color }) => <MaterialCommunityIcons name="bag-suitcase-outline" size={24} color={color} />
+            tabBarIcon: ({ color }) => <AntDesign name="folderopen" size={24} color={color} />
           }}
         />
         <Tabs.Screen
@@ -71,11 +71,11 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="projects"
+          name="packing"
           options={{
-            title: 'Projects',
+            title: 'Packing',
             // tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />
-            tabBarIcon: ({ color }) => <AntDesign name="folderopen" size={24} color={color} />
+            tabBarIcon: ({ color }) => <MaterialCommunityIcons name="bag-suitcase-outline" size={24} color={color} />
           }}
         />
       </Tabs>
