@@ -1,40 +1,30 @@
-import { ScrollView, TextInput, Text, Pressable, StyleSheet, KeyboardAvoidingView, Platform, View } from 'react-native'; 
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { ScrollView, Text, Pressable, StyleSheet, KeyboardAvoidingView, Platform, View } from 'react-native'; 
 import { useState } from 'react';
 
+import Input from '@/components/form/Input';
+import ListInput from './form/ListInput';
+import { IProject } from '@/utils/types';
+
 export default function ProjectForm({ info, saveFunction }: {
-    info?: {
-        title: string,
-        description: string,
-        tasks: {name: string, done: boolean}[],
-        things: {name: string, done: boolean}[],
-        notes: string,
-    };
-    saveFunction: any;
+    info?: IProject;
+    saveFunction: (_:IProject) => void;
 }) {
 
     const [ inputs, setInputs ] = useState(info ?  {
         title: info.title,
         description: info.description,
         tasks: info.tasks,
-        currentTask: '',
         things: info.things,
-        currentThing: '',
         notes: info.notes
         
     } : {
         title: '',
         description: '',
         tasks: [],
-        currentTask: '',
         things: [],
-        currentThing: '',
         notes: '',
 
     });
-
-    const [ addTask, setAddTask ] = useState(false);
-    const [ addItem, setAddItem ] = useState(false);
     
     function updateInputs(name: string, value: string) {
         if(name === 'tasks') {
@@ -62,14 +52,13 @@ export default function ProjectForm({ info, saveFunction }: {
     return (
         <KeyboardAvoidingView behavior={ Platform.OS === 'ios' ? 'padding' : 'height' } style={styles.form.form}>
             <ScrollView style={styles.form.container} keyboardDismissMode='on-drag'>
-            <TextInput 
-                style={[styles.form.input, styles.form.title]}
+            <Input
+                style={styles.form.title}
                 placeholder='Project Name'
                 value={inputs.title}
                 onChangeText={(value) => {updateInputs('title', value)}}
             />
-            <TextInput
-                style={[styles.form.input, styles.form.bigInput]}
+            <Input
                 placeholder='write a short description'
                 value={inputs.description}
                 onChangeText={(value) => {updateInputs('description', value)}}
@@ -77,118 +66,44 @@ export default function ProjectForm({ info, saveFunction }: {
             />
 
             <Text style={styles.form.text}> To Dos: </Text>
-            <View>
-                {inputs.tasks.map((task: {name: string, done: boolean }, index: number) => (
-                    <View style={styles.form.listItemContainer} key={index}>
-                        <MaterialIcons name="radio-button-unchecked" size={20} color="darkgray" />
-                        <Text style={styles.form.listItemText}>{ task.name }</Text>
-                        <Pressable
-                            style={({pressed}) => [styles.form.listItemCancel, pressed && styles.form.listItemCancelPressed]}
-                            onPress={() => setInputs(prev =>
-                            ({...prev, ['tasks']: prev.tasks.toSpliced(index, 1) }))}
-                        >
-                            <MaterialIcons name="close" size={11} color="darkslategray" />
-                        </Pressable>
-                    </View>
-                ))}
-            </View>
-            {addTask ? (
-                <View style={styles.form.singleInputContainer}>
-                    <TextInput 
-                        style={[styles.form.input, styles.form.singleInput ]}
-                        placeholder='enter task'
-                        value={inputs.currentTask}
-                        onChangeText={(value) => {updateInputs('currentTask', value)}}
-                        clearButtonMode='while-editing'
-                    />
-                    <Pressable
-                        style={styles.form.singleInputButton}
-                        onPress={() => {
-                            if(inputs.currentTask !== '') {
-                                updateInputs('tasks', inputs.currentTask);
-                            }
-                            
-                            setAddTask(false);
-
-                        }}
-                    >
-                        <Text style={styles.form.singleInputButtonText}>
-                            {inputs.currentTask === '' ? 
-                                "Close" :
-                                "Add task"
-                            }
-                        </Text>
-                    </Pressable>
-                </View>
-            ) : (
-                <Pressable
-                    style={({pressed}) => [styles.form.itemButton, pressed && styles.form.itemButtonPressed]}
-                    onPress={() => setAddTask(true)}
-                >
-                    <MaterialIcons name="add" size={15} color="black" />
-                    <Text style={[styles.form.itemButtonText, ]}>Add Task</Text>
-                </Pressable>
-            )}
+            <ListInput 
+                list={inputs.tasks}
+                updateList={(value: string | number) => {
+                    if(typeof(value) === "string") {
+                        setInputs(prev => {
+                            prev.tasks.push({name: value, done: false});
+                            return {...prev, ['tasks']: prev.tasks};
+                        }); 
+                    } else {
+                     setInputs(prev =>
+                            ({...prev, ['tasks']: prev.tasks.toSpliced(value, 1) }))
+                    }
+                }}
+            />
 
             <Text style={styles.form.text}> Things needed / to get: </Text>
-            <View>
-                {inputs.things.map((thing: {name: string, done: boolean }, index: number) => (
-                    <View style={styles.form.listItemContainer} key={index}>
-                        <MaterialIcons name="radio-button-unchecked" size={20} color="darkgray" />
-                        <Text style={styles.form.listItemText}>{ thing.name }</Text>
-                        <Pressable
-                            style={({pressed}) => [styles.form.listItemCancel, pressed && styles.form.listItemCancelPressed]}
-                            onPress={() => setInputs(prev => ({ ...prev, ['things']: prev.things.toSpliced(index, 1)}))}
-                        >
-                            <MaterialIcons name="close" size={11} color="darkslategray" />
-                        </Pressable>
-                    </View>
-                ))}
-            </View>
-            {addItem ? (
-                <View style={styles.form.singleInputContainer}>
-                <TextInput 
-                    style={[styles.form.input, styles.form.singleInput]}
-                    placeholder='enter item'
-                    value={inputs.currentThing}
-                    onChangeText={(value) => {updateInputs('currentThing', value)}}
-                    clearButtonMode='while-editing'
-                />
-                <Pressable
-                    style={styles.form.singleInputButton}
-                    onPress={() => {
-                            if(inputs.currentThing !== '') {
-                                updateInputs('things', inputs.currentThing);
-                            }
-                            
-                            setAddItem(false);
-                        }}
-                >
-                    <Text style={styles.form.singleInputButtonText}>
-                        {inputs.currentThing === '' ? 
-                            "Close" :
-                            "Add item"
-                        }
-                    </Text>
-                </Pressable>
-                </View>
-            ) : (
-                <Pressable
-                    style={({pressed}) => [styles.form.itemButton, pressed && styles.form.itemButtonPressed]}
-                    onPress={() => setAddItem(true)}
-                >
-                    <MaterialIcons name="add" size={15} color="black" />
-                    <Text style={styles.form.itemButtonText}>Add Item</Text>
-                </Pressable>
-            )}
+            <ListInput 
+                list={inputs.things}
+                updateList={(value: string | number) => {
+                    if(typeof(value) === "string") {
+                        setInputs(prev => {
+                            prev.things.push({name: value, done: false});
+                            return {...prev, ['things']: prev.things};
+                        }); 
+                    } else {
+                     setInputs(prev =>
+                            ({...prev, ['things']: prev.things.toSpliced(value, 1) }))
+                    }
+                }}
+            />
             
             <Text style={styles.form.text}> Notes: </Text>
-            <TextInput
-                style={[styles.form.input, styles.form.bigInput]}
+            <Input
                 placeholder='extra notes'
                 value={inputs.notes}
                 onChangeText={(value) => {updateInputs('notes', value)}}
                 multiline
+
             />
             </ScrollView>
 
@@ -226,10 +141,6 @@ const styles = {
             borderColor: 'gainsboro',
             borderWidth: 1,
             borderRadius: 10,
-        },
-
-        bigInput: {
-            height: 80,
         },
 
         singleInputContainer: {

@@ -1,19 +1,10 @@
 import { View, Text, StyleSheet, FlatList, Pressable } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
 import ProjectForm from '@/components/ProjectForm';
 import { MaterialIcons } from '@expo/vector-icons';
 
-interface IProject {
-    title: string,
-    description: string,
-    picture: string,
-    things: { name: string, done: boolean }[],
-    currentThing?: string,
-    tasks: {name: string, done: boolean }[],
-    currentTask?: string,
-    notes: string
-}
+import { storeData, getData } from '@/utils/storageUtils';
+import { IProject } from '@/utils/types';
 
 function Item({ title, description, picture }: IProject ) {
     return (
@@ -33,68 +24,46 @@ function Item({ title, description, picture }: IProject ) {
 export default function Projects() {
     const [ projectList, setProjectList ] = useState<IProject[]>([]);
     const [ createProject, setCreateProject ] = useState(false);
-
-    async function storeProjects(projects: IProject[] = projectList) {
-        try {
-            await AsyncStorage.setItem('dailyInputs', JSON.stringify(projects))
-        } catch(error) {
-            console.log(error)
-        }
-    }
+    const [ viewProject, setViewProject ] = useState(-1);
+    const [ editProject, setEditProject ] = useState(-1);
 
     useEffect(() => {
-        async function getProjects() {
-            try {
-                const jsonValue = await AsyncStorage.getItem('dailyInputs');
-                jsonValue != null && setProjectList(JSON.parse(jsonValue));
-                
-            } catch (error) {
-                console.log(error)
-            }
-        }
-
-        getProjects();
-    }, []);
+        getData('projects', setProjectList);
+    }, [getData]);
 
 
-    function updateProjectlist(project: IProject, 
-    projectIndex: number = -1) {
-
-        delete project.currentTask; delete project.currentThing;
-
-        if(projectIndex === -1) {
+    function updateProjectlist(project: IProject, projectIndex: number = -1) {
+        projectIndex >= 0 ? 
+            setProjectList(prev => {prev[projectIndex] = project; return prev}) :
             setProjectList(prev => prev.concat([ project ]));
-        } else {
-            setProjectList(prev => {
-                prev[projectIndex] = project;
-                return prev;
-            });
-        }
     }
 
-    function handleProjectCreation(project: IProject) {
+    async function handleProjectCreation(project: IProject) {
         updateProjectlist(project);
-        storeProjects(projectList);
-
+        storeData('projects', (await getData('projects')).concat(project));
         setCreateProject(false);
     }
 
     return (
         <View style={styles.projectList.main}>
-            { createProject ? 
-            (<ProjectForm saveFunction={handleProjectCreation} />) :
-            (<><FlatList
-                data = {projectList}
-                renderItem = {({item}) => Item(item)}
-                style = {styles.projectList.container}
-            />
-            <Pressable 
-                style={({pressed}) => [styles.projectList.button, pressed && styles.projectList.pressedButton]}
-                onPress={() => {setCreateProject(true)}}
-            >
-                <MaterialIcons style={styles.projectList.plusIcon} name="add" size={24} color="black" />
-                <Text style={styles.projectList.buttonText}> Add Project </Text>
-            </Pressable></>)
+            { 
+            createProject ? (<ProjectForm saveFunction={(handleProjectCreation)} />) : 
+            viewProject >= 0 ? (<></>) :
+            editProject >= 0 ? (<></>) :
+            (<>
+                <FlatList
+                    data = {projectList}
+                    renderItem = {({item}) => Item(item)}
+                    style = {styles.projectList.container}
+                />
+                <Pressable 
+                    style={({pressed}) => [styles.projectList.button, pressed && styles.projectList.pressedButton]}
+                    onPress={() => {setCreateProject(true)}}
+                >
+                    <MaterialIcons style={styles.projectList.plusIcon} name="add" size={24} color="black" />
+                    <Text style={styles.projectList.buttonText}> Add Project </Text>
+                </Pressable>
+            </>)
             }
         </View>
     );

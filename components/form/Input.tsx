@@ -1,12 +1,12 @@
 import { TextInput, StyleSheet } from 'react-native';
 
-
-export default function Input({ placeholder = '', value = '', onChangeText, style, multiline = false }: {
+export default function Input({ placeholder = '', value = '', onChangeText, style, multiline = false, clearButtonMode }: {
     placeholder?: string,
     value: string,
     onChangeText: (text: string) => void,
-    style?: StyleSheet.NamedStyles<any>,
+    style?: any,
     multiline?: boolean,
+    clearButtonMode?: "never" | "while-editing" | "unless-editing" | "always",
 }) {
     return (
         <TextInput
@@ -15,6 +15,7 @@ export default function Input({ placeholder = '', value = '', onChangeText, styl
         onChangeText = { onChangeText }
         style = {[styles.input, multiline? styles.multiline : styles.singleLine, style]}
         multiline = { multiline }
+        clearButtonMode={clearButtonMode}
         />
     );
 }

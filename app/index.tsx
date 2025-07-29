@@ -62,7 +62,6 @@ const menuStyles = StyleSheet.create({
     },
 
     button: {
-        // backgroundColor: 'darkseagreen',
         padding: 15,
         margin: 15,
         borderRadius: 20,

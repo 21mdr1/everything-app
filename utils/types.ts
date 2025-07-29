@@ -5,4 +5,13 @@ interface screen {
     path: paths;
 }
 
-export { type paths, screen }
+interface IProject {
+    title: string,
+    description: string,
+    picture?: string,
+    things: { name: string, done: boolean }[],
+    tasks: {name: string, done: boolean }[],
+    notes: string
+}
+
+export { type paths, screen, IProject }
