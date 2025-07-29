@@ -80,15 +80,14 @@ export default function ProjectForm({ info, saveFunction }: {
             <View>
                 {inputs.tasks.map((task: {name: string, done: boolean }, index: number) => (
                     <View style={styles.form.listItemContainer} key={index}>
+                        <MaterialIcons name="radio-button-unchecked" size={20} color="darkgray" />
                         <Text style={styles.form.listItemText}>{ task.name }</Text>
                         <Pressable
                             style={({pressed}) => [styles.form.listItemCancel, pressed && styles.form.listItemCancelPressed]}
-                            onPress={() => {setInputs(prev => {
-                                prev.tasks.splice(index, 1);
-                                return prev;
-                            })}}
+                            onPress={() => setInputs(prev =>
+                            ({...prev, ['tasks']: prev.tasks.toSpliced(index, 1) }))}
                         >
-                            <MaterialIcons name="close" size={24} color="black" />
+                            <MaterialIcons name="close" size={11} color="darkslategray" />
                         </Pressable>
                     </View>
                 ))}
@@ -100,6 +99,7 @@ export default function ProjectForm({ info, saveFunction }: {
                         placeholder='enter task'
                         value={inputs.currentTask}
                         onChangeText={(value) => {updateInputs('currentTask', value)}}
+                        clearButtonMode='while-editing'
                     />
                     <Pressable
                         style={styles.form.singleInputButton}
@@ -125,7 +125,8 @@ export default function ProjectForm({ info, saveFunction }: {
                     style={({pressed}) => [styles.form.itemButton, pressed && styles.form.itemButtonPressed]}
                     onPress={() => setAddTask(true)}
                 >
-                    <Text style={styles.form.itemButtonText}>Add Task</Text>
+                    <MaterialIcons name="add" size={15} color="black" />
+                    <Text style={[styles.form.itemButtonText, ]}>Add Task</Text>
                 </Pressable>
             )}
 
@@ -133,15 +134,13 @@ export default function ProjectForm({ info, saveFunction }: {
             <View>
                 {inputs.things.map((thing: {name: string, done: boolean }, index: number) => (
                     <View style={styles.form.listItemContainer} key={index}>
+                        <MaterialIcons name="radio-button-unchecked" size={20} color="darkgray" />
                         <Text style={styles.form.listItemText}>{ thing.name }</Text>
                         <Pressable
                             style={({pressed}) => [styles.form.listItemCancel, pressed && styles.form.listItemCancelPressed]}
-                            onPress={() => {setInputs(prev => {
-                                prev.things.splice(index, 1);
-                                return prev;
-                            })}}
+                            onPress={() => setInputs(prev => ({ ...prev, ['things']: prev.things.toSpliced(index, 1)}))}
                         >
-                            <MaterialIcons name="close" size={24} color="black" />
+                            <MaterialIcons name="close" size={11} color="darkslategray" />
                         </Pressable>
                     </View>
                 ))}
@@ -153,6 +152,7 @@ export default function ProjectForm({ info, saveFunction }: {
                     placeholder='enter item'
                     value={inputs.currentThing}
                     onChangeText={(value) => {updateInputs('currentThing', value)}}
+                    clearButtonMode='while-editing'
                 />
                 <Pressable
                     style={styles.form.singleInputButton}
@@ -177,6 +177,7 @@ export default function ProjectForm({ info, saveFunction }: {
                     style={({pressed}) => [styles.form.itemButton, pressed && styles.form.itemButtonPressed]}
                     onPress={() => setAddItem(true)}
                 >
+                    <MaterialIcons name="add" size={15} color="black" />
                     <Text style={styles.form.itemButtonText}>Add Item</Text>
                 </Pressable>
             )}
@@ -273,6 +274,8 @@ const styles = {
             alignSelf: 'flex-start',
             marginTop: 2,
             marginBottom: 15,
+            flexDirection: 'row',
+            alignItems: 'center',
         },
 
         itemButtonPressed: {
@@ -281,6 +284,7 @@ const styles = {
 
         itemButtonText: {
             fontFamily: 'Virgil',
+            marginLeft: 5,
         },
 
         button: {
@@ -301,18 +305,25 @@ const styles = {
 
         listItemContainer: {
             flexDirection: 'row',
+            marginLeft: 15,
+            alignItems: 'center',
+            marginBottom: 3,
         },
 
         listItemText: {
             fontFamily: 'Virgil',
+            marginLeft: 10,
+            flex: 1,
         },
 
         listItemCancel: {
             backgroundColor: 'gainsboro',
-            width: 24,
+            width: 13,
             aspectRatio: 1,
-            padding: 2,
             borderRadius: 100,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginRight: 30,
         },
 
         listItemCancelPressed: {

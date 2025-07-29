@@ -2,9 +2,10 @@ import { View, Text, StyleSheet, FlatList, Pressable } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
 import ProjectForm from '@/components/ProjectForm';
+import { MaterialIcons } from '@expo/vector-icons';
 
 interface IProject {
-    name: string,
+    title: string,
     description: string,
     picture: string,
     things: { name: string, done: boolean }[],
@@ -14,31 +15,11 @@ interface IProject {
     notes: string
 }
 
-
-const projects: IProject[] = [
-    {
-        name: "Sample project 1",
-        description: "this is a sample project",
-        picture: "",
-        things: [{ name: "motivation", done: false }],
-        tasks: [{ name: "Start", done: false }, { name: "make a plan", done: false }],
-        notes: "this is a sample project uwu"
-    },
-    {
-        name: "Sample project 2",
-        description: "this is another sample project",
-        picture: "",
-        things: [{ name: "something or other", done: false }],
-        tasks: [{name: "finish", done: false }, { name: "think", done: false }],
-        notes: "we do be sampling"
-    }
-]
-
-function Item({ name, description, picture }: typeof projects[0] ) {
+function Item({ title, description, picture }: IProject ) {
     return (
         <View style={styles.project.container}>
             <View style={styles.project.infoContainer}>
-                <Text style={styles.project.title}>{ name }</Text>
+                <Text style={styles.project.title}>{ title }</Text>
                 <Text style={styles.project.description}>{ description }</Text>
             </View>
             <View>
@@ -50,7 +31,7 @@ function Item({ name, description, picture }: typeof projects[0] ) {
 
 
 export default function Projects() {
-    const [ projectList, setProjectList ] = useState(projects);
+    const [ projectList, setProjectList ] = useState<IProject[]>([]);
     const [ createProject, setCreateProject ] = useState(false);
 
     async function storeProjects(projects: IProject[] = projectList) {
@@ -61,33 +42,47 @@ export default function Projects() {
         }
     }
 
-    // useEffect(() => {
-    //     async function getProjects() {
-    //         try {
-    //             const jsonValue = await AsyncStorage.getItem('dailyInputs');
-    //             jsonValue != null && setProjectList(JSON.parse(jsonValue));
+    useEffect(() => {
+        async function getProjects() {
+            try {
+                const jsonValue = await AsyncStorage.getItem('dailyInputs');
+                jsonValue != null && setProjectList(JSON.parse(jsonValue));
                 
-    //         } catch (error) {
-    //             console.log(error)
-    //         }
-    //     }
+            } catch (error) {
+                console.log(error)
+            }
+        }
 
-    //     getProjects();
-    // }, []);
+        getProjects();
+    }, []);
+
+
+    function updateProjectlist(project: IProject, 
+    projectIndex: number = -1) {
+
+        delete project.currentTask; delete project.currentThing;
+
+        if(projectIndex === -1) {
+            setProjectList(prev => prev.concat([ project ]));
+        } else {
+            setProjectList(prev => {
+                prev[projectIndex] = project;
+                return prev;
+            });
+        }
+    }
 
     function handleProjectCreation(project: IProject) {
-        setProjectList(prev => { 
-            prev.push(project); 
-            storeProjects(prev);
-            return prev;
-        });
-        
+        updateProjectlist(project);
+        storeProjects(projectList);
+
         setCreateProject(false);
     }
 
     return (
         <View style={styles.projectList.main}>
             { createProject ? 
+            (<ProjectForm saveFunction={handleProjectCreation} />) :
             (<><FlatList
                 data = {projectList}
                 renderItem = {({item}) => Item(item)}
@@ -97,10 +92,9 @@ export default function Projects() {
                 style={({pressed}) => [styles.projectList.button, pressed && styles.projectList.pressedButton]}
                 onPress={() => {setCreateProject(true)}}
             >
-                {/* TODO: add plus sign */}
+                <MaterialIcons style={styles.projectList.plusIcon} name="add" size={24} color="black" />
                 <Text style={styles.projectList.buttonText}> Add Project </Text>
-            </Pressable></>) :
-            (<ProjectForm saveFunction={setProjectList} />)
+            </Pressable></>)
             }
         </View>
     );
@@ -132,7 +126,6 @@ const styles = {
         },
 
         image: {
-            // backgroundColor: 'red',
             width: 120,
             aspectRatio: 1,
             borderRadius: 25,
@@ -149,7 +142,6 @@ const styles = {
         },
 
         container: {
-            // backgroundColor: 'red',
             flex: 1,
         },
 
@@ -157,6 +149,9 @@ const styles = {
             backgroundColor: 'green',
             paddingVertical: 15,
             borderRadius: 15,
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
         },
 
         pressedButton: {
@@ -167,6 +162,11 @@ const styles = {
             fontFamily: 'Virgil',
             fontSize: 20,
             textAlign: 'center',
+        },
+
+        plusIcon: {
+            position: 'absolute',
+            left: 80,
         }
     }),
 }
