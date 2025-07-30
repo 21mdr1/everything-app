@@ -1,17 +1,21 @@
 import { View, Text, StyleSheet, FlatList, Pressable } from 'react-native';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'expo-router';
 import ProjectForm from '@/components/ProjectForm';
 import Project from '@/components/Project';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import { storeData, getData } from '@/utils/storageUtils';
 import { IProject } from '@/utils/types';
+import { IconSymbol } from '@/components/ui/IconSymbol';
 
 export default function Projects() {
     const [ projectList, setProjectList ] = useState<IProject[]>([]);
     const [ createProject, setCreateProject ] = useState(false);
     const [ viewProject, setViewProject ] = useState(-1);
     const [ editProject, setEditProject ] = useState(-1);
+
+    const router = useRouter();
 
     useEffect(() => {
         getData('projects', setProjectList);
@@ -49,7 +53,11 @@ export default function Projects() {
     return (
         <View style={styles.projectList.main}>
             { 
-            createProject ? (<ProjectForm saveFunction={(handleProjectCreation)} />) : 
+            createProject ? (
+                <ProjectForm 
+                    saveFunction={handleProjectCreation} 
+                    goBack={() => setCreateProject(false)} 
+                />) : 
             editProject >= 0 ? (
                 <ProjectForm 
                     info={projectList[editProject]} 
@@ -57,6 +65,7 @@ export default function Projects() {
                         updateProjectlist(project, editProject); 
                         setEditProject(-1);
                     }} 
+                    goBack={() => setEditProject(-1)}
                 />) :
             viewProject >= 0 ? (
                 <Project 
@@ -70,6 +79,9 @@ export default function Projects() {
                     }}
                 />) :
             (<>
+                <Pressable onPress={() => router.push('/')} style={styles.projectList.menu}>
+                    <IconSymbol size={30} name="line.3.horizontal" color='black' />
+                </Pressable>
                 <FlatList
                     data = {projectList}
                     renderItem = {({item, index}) => Item(item, index)}
@@ -127,14 +139,20 @@ const styles = {
     projectList: StyleSheet.create({
         main: {
             flex: 1,
-            paddingHorizontal: 25,
             justifyContent: 'space-between',
             paddingBottom: 60,
+        },
+        menu: {
+            position: 'absolute',
+            right: 10,
+            top: 20,
+            zIndex: 99,
         },
 
         container: {
             flex: 1,
             paddingTop: 50,
+            paddingHorizontal: 25,
         },
 
         button: {
@@ -144,6 +162,7 @@ const styles = {
             flexDirection: 'row',
             justifyContent: 'center',
             alignItems: 'center',
+            marginHorizontal: 25,
         },
 
         pressedButton: {

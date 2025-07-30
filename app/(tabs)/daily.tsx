@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import { useRouter } from 'expo-router';
 import { View, Text, StyleSheet, SectionList, TextInput, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { IconSymbol } from '@/components/ui/IconSymbol';
+import { storeData, getData } from '@/utils/storageUtils';
 
 const data = {
     inputs: {
@@ -119,7 +121,8 @@ function Item({item: { placeholder, key }, index, section}:
                 { completed[key] && <Ionicons name="checkmark-outline" size={20} color="black" /> }
             </Pressable>
             <TextInput 
-                style={[dailyStyles.sectionItemText, completed[key] && dailyStyles.sectionItemTextDec]}
+                // style={[dailyStyles.sectionItemText, completed[key] && dailyStyles.sectionItemTextDec]}
+                style={dailyStyles.sectionItemText}
                 placeholder={placeholder}
                 value={inputs[key]}
                 onChangeText={(value) => {updateInputs(key, value)}}
@@ -134,27 +137,12 @@ export default function daily() {
     const [ inputs, setInputs ] = useState(data.inputs);
     const [ completed, setCompleted ] = useState(data.completed);
 
+    const router = useRouter();
+
     useEffect(() => {
-        async function getData() {
-            try {
-                const jsonValue = await AsyncStorage.getItem('dailyInputs');
-                jsonValue != null && setInputs(JSON.parse(jsonValue))
-            } catch (error) {
-                console.log(error)
-            }
-
-            try {
-                const jsonValue = await AsyncStorage.getItem('dailyCompleted');
-                jsonValue != null && setCompleted(JSON.parse(jsonValue))
-
-            } catch (error) {
-                console.log(error)
-            }
-        }
-
-        getData();
-        
-    },[]);
+        getData('dailyInputs', setInputs);
+        getData('dailyCompleted', setCompleted);
+    },[getData]);
 
 
     function updateInputs(name: string, value: string) {
@@ -165,26 +153,12 @@ export default function daily() {
         setCompleted(prev => ({...prev, [name]: value}))
     }
 
-    async function storeInputs() {
-        try {
-            await AsyncStorage.setItem('dailyInputs', JSON.stringify(inputs))
-        } catch(error) {
-            console.log(error)
-        }
-    }
-
-    async function storeCompleted() {
-        try {
-            await AsyncStorage.setItem('dailyCompleted', JSON.stringify(completed));
-        } catch(error) {
-            console.log(error)
-        }
-    }
-
     return (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={dailyStyles.main}>
+            <Pressable onPress={() => router.push('/')} style={dailyStyles.menu}>
+                <IconSymbol size={30} name="line.3.horizontal" color='black' />
+            </Pressable>
             <View style={dailyStyles.scroller}>
-
                 <SectionList 
                     keyboardDismissMode='on-drag'
                     sections={items}
@@ -192,7 +166,7 @@ export default function daily() {
                         <Text style={dailyStyles.sectionLabel}>{ title }</Text>}
                     ItemSeparatorComponent={() => 
                         <View style={dailyStyles.separator} />}
-                    renderItem={({ item, index, section }) => Item({ item, index, section }, inputs, updateInputs, storeInputs, completed, updateCompleted, storeCompleted)}
+                    renderItem={({ item, index, section }) => Item({ item, index, section }, inputs, updateInputs, () => storeData('dailyInputs', inputs), completed, updateCompleted, () => storeData('dailyCompleted', completed))}
                     indicatorStyle='white'
                 />
 
@@ -210,6 +184,13 @@ const dailyStyles = StyleSheet.create({
     scroller: {
         paddingTop: 5,
         paddingHorizontal: 20,
+    },
+
+    menu: {
+        position: 'absolute',
+        right: 10,
+        top: 20,
+        zIndex: 99,
     },
 
     focusInput: {
@@ -262,11 +243,11 @@ const dailyStyles = StyleSheet.create({
         flex: 1,
     },
 
-    sectionItemTextDec: {
-        textDecorationLine: 'line-through',
-        textDecorationColor: 'black',
-        textDecorationStyle: 'solid',
-    },
+    // sectionItemTextDec: {
+    //     textDecorationLine: 'line-through',
+    //     textDecorationColor: 'black',
+    //     textDecorationStyle: 'solid',
+    // },
 
     sectionItemCheck: {
         width: 20,

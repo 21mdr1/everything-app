@@ -1,6 +1,7 @@
-import { useRouter } from 'expo-router';
+import { useRouter, Router } from 'expo-router';
 import { View, Text, StyleSheet, Pressable, FlatList } from 'react-native';
 import { paths } from '@/utils/types';
+import { MaterialIcons } from '@expo/vector-icons';
 
 interface screen {
     name: string;
@@ -11,13 +12,12 @@ const screens: screen[] = [
     { name: 'Daily', path: '/daily'  },
     { name: 'Weekly', path: '/weekly'  },
     { name: 'Projects', path: '/projects' },
-    { name: 'Vision Board', path: '/' },
+    { name: 'Vision Board', path: '/visionBoard' },
     { name: 'Storage', path: '/storage' },
     { name: 'Packing', path: '/packing' }
 ]
 
-function Button({ name, path }: { name: string; path: paths }) {
-    const router = useRouter();
+function Button({ name, path, router }: { name: string; path: paths; router: Router }) {
 
     return (
         <Pressable 
@@ -25,7 +25,7 @@ function Button({ name, path }: { name: string; path: paths }) {
                 pressed ? [menuStyles.button, menuStyles.pressedBackground] : 
                 [menuStyles.button, menuStyles.unpressedBackground]} 
             key={name} 
-            onPress={ () => router.navigate(path) }
+            onPress={ () => router.push(path) }
         >
             <Text style={menuStyles.buttonLabel}>
                 {name}
@@ -35,13 +35,20 @@ function Button({ name, path }: { name: string; path: paths }) {
 }
 
 export default function Menu() {
+    const router = useRouter();
 
     return (
         <View style={menuStyles.container}>
+            {router.canGoBack() &&
+            (<Pressable onPress={router.back} style={menuStyles.backButton}>
+                <MaterialIcons name="close" size={30} color="black" />
+            </Pressable>)
+            }
+
             <FlatList 
                 contentContainerStyle={menuStyles.list}
                 data={screens}
-                renderItem={({ item }) => <Button name={item.name} path={item.path} />}
+                renderItem={({ item }) => <Button name={item.name} path={item.path} router={router} />}
             />
         </View>
     );
@@ -54,6 +61,13 @@ const menuStyles = StyleSheet.create({
         justifyContent: 'center',
         padding: 30,
         paddingTop: 50,
+    },
+
+    backButton: {
+        position: 'absolute',
+        right: 10,
+        top: 20,
+        zIndex: 99,
     },
 
     list: {

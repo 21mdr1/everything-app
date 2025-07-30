@@ -11,15 +11,10 @@ export default function Project({ project, goBack, edit, updateItem }: {
     
     return (
         <ScrollView style={styles.project.main}>
+            <Pressable onPress={goBack} style={styles.project.backButton}>
+                <MaterialIcons name="close" size={30} color="black" />
+            </Pressable>
             <View style={styles.project.container}>
-                <Pressable
-                    style={({ pressed }) => [styles.backButton.container, pressed && styles.backButton.pressedContainer]}
-                    onPress={goBack}
-                >
-                    <MaterialIcons name="arrow-back-ios" size={15} color="black" />
-                    <Text style={styles.backButton.text}>Go Back</Text>
-                </Pressable>
-
                 <View style={styles.project.content}>
 
                 <View style={styles.project.titleContainer}>
@@ -83,36 +78,22 @@ export default function Project({ project, goBack, edit, updateItem }: {
 
 
 const styles = {
-    backButton: StyleSheet.create({
-        container: {
-            backgroundColor: 'gainsboro',
-            flexDirection: 'row',
-            alignItems: 'center',
-            alignSelf: 'flex-start',
-            paddingHorizontal: 15,
-            paddingVertical: 5,
-            borderRadius: 15,
-            position: 'absolute',
-            top: -28,
-        },
-
-        pressedContainer: {
-            backgroundColor: 'lightgrey',
-        },
-
-        text: {
-            fontFamily: 'Virgil',
-        }
-    }),
-
     project: StyleSheet.create({
         main: {
             flex: 1,
-            paddingTop: 50,
         }, 
 
+        backButton: {
+            position: 'absolute',
+            right: 10,
+            top: 20,
+            zIndex: 99,
+        },
+
         container: {
-            minHeight: 557,
+            minHeight: 607,
+            paddingTop: 50,
+            paddingHorizontal: 25,
         },
 
         content: {

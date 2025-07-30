@@ -4,10 +4,13 @@ import { useState } from 'react';
 import Input from '@/components/form/Input';
 import ListInput from './form/ListInput';
 import { IProject } from '@/utils/types';
+import { MaterialIcons } from '@expo/vector-icons';
 
-export default function ProjectForm({ info, saveFunction }: {
+
+export default function ProjectForm({ info, saveFunction, goBack }: {
     info?: IProject;
     saveFunction: (_:IProject) => void;
+    goBack: () => void
 }) {
 
     const [ inputs, setInputs ] = useState<IProject>(info ?  info : {
@@ -39,6 +42,9 @@ export default function ProjectForm({ info, saveFunction }: {
 
     return (
         <KeyboardAvoidingView behavior={ Platform.OS === 'ios' ? 'padding' : 'height' } style={styles.form.form}>
+            <Pressable onPress={goBack} style={styles.form.backButton}>
+                <MaterialIcons name="close" size={30} color="black" />
+            </Pressable>
             <ScrollView style={styles.form.container} keyboardDismissMode='on-drag'>
             <Input
                 style={styles.form.title}
@@ -100,7 +106,16 @@ const styles = {
             flex: 1,
             justifyContent: 'space-between',
             paddingTop: 50,
+            paddingHorizontal: 25,
         },
+
+        backButton: {
+            position: 'absolute',
+            right: 10,
+            top: 20,
+            zIndex: 99,
+        },
+
         container: {
             flex: 1,
         },
