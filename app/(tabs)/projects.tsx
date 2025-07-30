@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, FlatList, Pressable } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Pressable, Alert } from 'react-native';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import ProjectForm from '@/components/ProjectForm';
@@ -50,6 +50,27 @@ export default function Projects() {
         setCreateProject(false);
     }
 
+    async function handleProjectDeletion(projectIndex: number) {
+        Alert.alert(
+            "Confirmation",
+            "Are you sure you want to delete this project? This action cannot be undone.",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel" // iOS specific style
+                },
+                {
+                    text: "Yes",
+                    onPress: async () => { 
+                        storeData('projects', (await getData('projects')).toSpliced(projectIndex, 1));
+                        setProjectList(prev => {prev.splice(projectIndex, 1); return [...prev]});
+                        setViewProject(-1); 
+                    }
+                }
+            ]
+        );
+    }
+
     return (
         <View style={styles.projectList.main}>
             { 
@@ -77,6 +98,7 @@ export default function Projects() {
                         updatedProject[itemType][index].done = value
                         updateProjectlist(updatedProject, viewProject)
                     }}
+                    deleteProject={() => handleProjectDeletion(viewProject)}
                 />) :
             (<>
                 <Pressable onPress={() => router.push('/')} style={styles.projectList.menu}>

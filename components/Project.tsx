@@ -2,11 +2,12 @@ import { Text, Pressable, View, ScrollView, StyleSheet } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { IProject } from "@/utils/types";
 
-export default function Project({ project, goBack, edit, updateItem }: {
+export default function Project({ project, goBack, edit, updateItem, deleteProject }: {
     project: IProject;
     goBack: () => void;
     edit: () => void;
     updateItem: (itemType: 'tasks' | 'things', index: number, value: boolean) => void;
+    deleteProject: () => void;
 }) {
     
     return (
@@ -67,7 +68,7 @@ export default function Project({ project, goBack, edit, updateItem }: {
 
                 <Pressable
                     style={({pressed}) => [styles.delete.button, pressed && styles.delete.pressedButton]}
-                    onPress={() => {}}
+                    onPress={deleteProject}
                 >
                     <Text style={styles.delete.text}>Delete Project</Text>
                 </Pressable>
