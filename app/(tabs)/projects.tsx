@@ -1,25 +1,11 @@
 import { View, Text, StyleSheet, FlatList, Pressable } from 'react-native';
 import { useState, useEffect } from 'react';
 import ProjectForm from '@/components/ProjectForm';
+import Project from '@/components/Project';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import { storeData, getData } from '@/utils/storageUtils';
 import { IProject } from '@/utils/types';
-
-function Item({ title, description, picture }: IProject ) {
-    return (
-        <View style={styles.project.container}>
-            <View style={styles.project.infoContainer}>
-                <Text style={styles.project.title}>{ title }</Text>
-                <Text style={styles.project.description}>{ description }</Text>
-            </View>
-            <View>
-                <Text style={styles.project.image}>{ picture }</Text>
-            </View>
-        </View>
-    );
-}
-
 
 export default function Projects() {
     const [ projectList, setProjectList ] = useState<IProject[]>([]);
@@ -31,10 +17,26 @@ export default function Projects() {
         getData('projects', setProjectList);
     }, [getData]);
 
+    function Item({ title, description, picture }: IProject, index: number) {
+        return (
+            <Pressable 
+                style={({pressed}) => [styles.project.container, pressed && styles.project.pressedContainer ]}
+                onPress={() => setViewProject(index)}
+            >
+                <View style={styles.project.infoContainer}>
+                    <Text style={styles.project.title}>{ title }</Text>
+                    <Text style={styles.project.description}>{ description }</Text>
+                </View>
+                <View>
+                    <Text style={styles.project.image}>{ picture }</Text>
+                </View>
+            </Pressable>
+        );
+    }
 
     function updateProjectlist(project: IProject, projectIndex: number = -1) {
         projectIndex >= 0 ? 
-            setProjectList(prev => {prev[projectIndex] = project; return prev}) :
+            setProjectList(prev => {prev[projectIndex] = project; return [...prev]}) :
             setProjectList(prev => prev.concat([ project ]));
     }
 
@@ -48,12 +50,29 @@ export default function Projects() {
         <View style={styles.projectList.main}>
             { 
             createProject ? (<ProjectForm saveFunction={(handleProjectCreation)} />) : 
-            viewProject >= 0 ? (<></>) :
-            editProject >= 0 ? (<></>) :
+            editProject >= 0 ? (
+                <ProjectForm 
+                    info={projectList[editProject]} 
+                    saveFunction={(project: IProject) => { 
+                        updateProjectlist(project, editProject); 
+                        setEditProject(-1);
+                    }} 
+                />) :
+            viewProject >= 0 ? (
+                <Project 
+                    project={projectList[viewProject]} 
+                    goBack={() => setViewProject(-1)} 
+                    edit={() => setEditProject(viewProject)}
+                    updateItem={(itemType: 'tasks' | 'things', index: number, value: boolean) => {
+                        const updatedProject = projectList[viewProject]
+                        updatedProject[itemType][index].done = value
+                        updateProjectlist(updatedProject, viewProject)
+                    }}
+                />) :
             (<>
                 <FlatList
                     data = {projectList}
-                    renderItem = {({item}) => Item(item)}
+                    renderItem = {({item, index}) => Item(item, index)}
                     style = {styles.projectList.container}
                 />
                 <Pressable 
@@ -74,8 +93,12 @@ const styles = {
         container: {
             flexDirection: 'row',
             borderRadius: 25,
-            backgroundColor: "mintcream",
+            backgroundColor: "snow",
             marginVertical: 10,
+        },
+
+        pressedContainer: {
+            backgroundColor: "#ECEAEA",
         },
 
         infoContainer: {
@@ -104,7 +127,6 @@ const styles = {
     projectList: StyleSheet.create({
         main: {
             flex: 1,
-            paddingTop: 50,
             paddingHorizontal: 25,
             justifyContent: 'space-between',
             paddingBottom: 60,
@@ -112,10 +134,11 @@ const styles = {
 
         container: {
             flex: 1,
+            paddingTop: 50,
         },
 
         button: {
-            backgroundColor: 'green',
+            backgroundColor: 'burlywood',
             paddingVertical: 15,
             borderRadius: 15,
             flexDirection: 'row',
@@ -124,7 +147,7 @@ const styles = {
         },
 
         pressedButton: {
-            backgroundColor: 'darkgreen',
+            backgroundColor: 'chocolate',
         },
 
         buttonText: {

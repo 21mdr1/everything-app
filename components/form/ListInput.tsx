@@ -114,22 +114,14 @@ const styles = StyleSheet.create({
     inlineButton: {
         borderTopRightRadius: 10,
         borderBottomRightRadius: 10,
-        // backgroundColor: 'gainsboro',
-        // justifyContent: 'center',
-        // paddingHorizontal: 10,
-        // paddingVertical: 2,
     },
 
     blockButton: {
-        // backgroundColor: 'gainsboro',
         borderRadius: 100,
-        // paddingHorizontal: 10,
-        // paddingVertical: 3,
         alignSelf: 'flex-start',
         marginTop: 2,
         marginBottom: 15,
         flexDirection: 'row',
-        // alignItems: 'center',
     },
 
 
@@ -141,7 +133,6 @@ const styles = StyleSheet.create({
     },
 
     itemText: {
-        // fontFamily: 'Virgil',
         marginLeft: 10,
         flex: 1,
     },
@@ -151,8 +142,6 @@ const styles = StyleSheet.create({
         width: 13,
         aspectRatio: 1,
         borderRadius: 100,
-        // alignItems: 'center',
-        // justifyContent: 'center',
         marginRight: 30,
         paddingVertical: 0,
         paddingHorizontal: 0,

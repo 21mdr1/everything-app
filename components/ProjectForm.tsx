@@ -10,39 +10,27 @@ export default function ProjectForm({ info, saveFunction }: {
     saveFunction: (_:IProject) => void;
 }) {
 
-    const [ inputs, setInputs ] = useState(info ?  {
-        title: info.title,
-        description: info.description,
-        tasks: info.tasks,
-        things: info.things,
-        notes: info.notes
-        
-    } : {
+    const [ inputs, setInputs ] = useState<IProject>(info ?  info : {
         title: '',
         description: '',
         tasks: [],
         things: [],
         notes: '',
-
     });
     
-    function updateInputs(name: string, value: string) {
-        if(name === 'tasks') {
-            setInputs(prev => {
-                prev.tasks.push({name: value, done: false});
-                return {...prev, ['tasks']: prev.tasks};
-            });
-            setInputs(prev => ({...prev, ['currentTask']: ''}))
-            return;
-        }
+    function updateInputs(name: string, value: string, index?: number) {
+        if(name === 'tasks' || name === 'things') {
+            if(index === undefined) {
+                setInputs(prev => {
+                    prev[name].push({name: value, done: false});
+                    return {...prev, [name]: prev[name]}
+                })
+            } else {
+                setInputs(prev =>
+                    ({...prev, [name]: prev.tasks.toSpliced(index, 1) }
+                ))
+            }
 
-        if(name === 'things') {
-            setInputs(prev => {
-                prev.things.push({name: value, done: false});
-                return {...prev, ['things']: prev.things}
-            });
-
-            setInputs(prev => ({...prev, ['currentThing']: ''}))
             return;
         }
 
@@ -68,33 +56,21 @@ export default function ProjectForm({ info, saveFunction }: {
             <Text style={styles.form.text}> To Dos: </Text>
             <ListInput 
                 list={inputs.tasks}
-                updateList={(value: string | number) => {
-                    if(typeof(value) === "string") {
-                        setInputs(prev => {
-                            prev.tasks.push({name: value, done: false});
-                            return {...prev, ['tasks']: prev.tasks};
-                        }); 
-                    } else {
-                     setInputs(prev =>
-                            ({...prev, ['tasks']: prev.tasks.toSpliced(value, 1) }))
-                    }
-                }}
+                updateList={(value: string | number) =>
+                    typeof(value) === "string" ? 
+                        updateInputs('tasks', value) : 
+                        updateInputs('tasks', '', value)
+                }
             />
 
             <Text style={styles.form.text}> Things needed / to get: </Text>
             <ListInput 
                 list={inputs.things}
-                updateList={(value: string | number) => {
-                    if(typeof(value) === "string") {
-                        setInputs(prev => {
-                            prev.things.push({name: value, done: false});
-                            return {...prev, ['things']: prev.things};
-                        }); 
-                    } else {
-                     setInputs(prev =>
-                            ({...prev, ['things']: prev.things.toSpliced(value, 1) }))
-                    }
-                }}
+                updateList={(value: string | number) =>
+                    typeof(value) === "string" ? 
+                        updateInputs('things', value) : 
+                        updateInputs('things', '', value)
+                }
             />
             
             <Text style={styles.form.text}> Notes: </Text>
@@ -123,6 +99,7 @@ const styles = {
         form: {
             flex: 1,
             justifyContent: 'space-between',
+            paddingTop: 50,
         },
         container: {
             flex: 1,
