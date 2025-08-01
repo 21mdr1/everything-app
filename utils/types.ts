@@ -14,4 +14,19 @@ interface IProject {
     notes: string
 }
 
-export { type paths, screen, IProject }
+type dailyTasksKey = '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '10' | '11' | '12' | '13' | '14' | '15';
+
+interface IDailyTaskInputs {
+    title: string,
+    name: string,
+    data: {
+        placeholder: string,
+        key: dailyTasksKey
+    }[]
+}
+
+// Define the interface using Record
+interface ITasks extends Record<dailyTasksKey, string> {}
+interface ITaskCompletion extends Record<dailyTasksKey, boolean> {}
+
+export { type paths, screen, IProject, IDailyTaskInputs, dailyTasksKey, ITasks, ITaskCompletion }

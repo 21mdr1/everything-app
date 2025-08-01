@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "everything",
-    "slug": "everything",
+    "slug": "everything-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -37,6 +37,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "e339b4cb-2b01-4c37-9691-51fb7dd2958d"
+      }
+    },
+    "owner": "marurh20"
   }
 }

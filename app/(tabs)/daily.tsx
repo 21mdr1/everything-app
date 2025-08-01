@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, SectionList, TextInput, Pressable, KeyboardAvoi
 import { Ionicons } from '@expo/vector-icons';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { storeData, getData } from '@/utils/storageUtils';
+import { IDailyTaskInputs, dailyTasksKey, ITasks, ITaskCompletion } from '@/utils/types';
 
 const data = {
     inputs: {
@@ -22,14 +23,7 @@ const data = {
     }
 }
 
-const items: {
-    title: string,
-    name: string,
-    data: {
-        placeholder: string,
-        key: keyof typeof data["inputs"]
-    }[]
-}[] = [
+const items: IDailyTaskInputs[] = [
     {
         title: 'Today\'s Focus',
         name: 'focus',
@@ -79,14 +73,14 @@ const items: {
 
 function Item({item: { placeholder, key }, index, section}: 
     {
-        item: typeof items[0]["data"][0],
+        item: {placeholder: string, key: dailyTasksKey}
         index: number, 
-        section: typeof items[0]
+        section: IDailyTaskInputs,
     }, 
-    inputs: typeof data.inputs, 
+    inputs: ITasks, 
     updateInputs: (i: string, j: string) => void,
     storeInputs: () => Promise<void>, 
-    completed: typeof data.completed, 
+    completed: ITaskCompletion, 
     updateCompleted: (i: string, j: boolean) => void,
     storeCompleted: () => Promise<void>,
 ) {
