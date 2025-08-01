@@ -25,7 +25,6 @@ interface IDailyTaskInputs {
     }[]
 }
 
-// Define the interface using Record
 interface ITasks extends Record<dailyTasksKey, string> {}
 interface ITaskCompletion extends Record<dailyTasksKey, boolean> {}
 
