@@ -57,22 +57,6 @@ export default function TabLayout() {
             tabBarIcon: ({ color }) => <AntDesign name="folderopen" size={24} color={color} />
           }}
         />
-        <Tabs.Screen
-          name="storage"
-          options={{
-            title: 'Storage',
-            // tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />
-            tabBarIcon: ({ color }) => <Feather name="box" size={24} color={color} />
-          }}
-        />
-        <Tabs.Screen
-          name="packing"
-          options={{
-            title: 'Packing',
-            // tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />
-            tabBarIcon: ({ color }) => <MaterialCommunityIcons name="bag-suitcase-outline" size={24} color={color} />
-          }}
-        />
       </Tabs>
     </>
   );

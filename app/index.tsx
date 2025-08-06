@@ -12,9 +12,9 @@ const screens: screen[] = [
     { name: 'Daily', path: '/daily'  },
     { name: 'Weekly', path: '/weekly'  },
     { name: 'Projects', path: '/projects' },
-    { name: 'Vision Board', path: '/visionBoard' },
-    { name: 'Storage', path: '/storage' },
-    { name: 'Packing', path: '/packing' }
+    // { name: 'Vision Board', path: '/visionBoard' },
+    // { name: 'Storage', path: '/storage' },
+    // { name: 'Packing', path: '/packing' }
 ]
 
 function Button({ name, path, router }: { name: string; path: paths; router: Router }) {

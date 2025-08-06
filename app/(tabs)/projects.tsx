@@ -18,7 +18,7 @@ export default function Projects() {
     const router = useRouter();
 
     useEffect(() => {
-        getData('projects', setProjectList);
+        getData('projects', data => {data && setProjectList(data)});
     }, [getData]);
 
     function Item({ title, description, picture }: IProject, index: number) {
@@ -46,8 +46,8 @@ export default function Projects() {
 
     async function handleProjectCreation(project: IProject) {
         updateProjectlist(project);
-        storeData('projects', (await getData('projects')).concat(project));
         setCreateProject(false);
+        storeData('projects', (await getData('projects')).concat(project));
     }
 
     async function handleProjectDeletion(projectIndex: number) {
@@ -62,9 +62,9 @@ export default function Projects() {
                 {
                     text: "Yes",
                     onPress: async () => { 
-                        storeData('projects', (await getData('projects')).toSpliced(projectIndex, 1));
                         setProjectList(prev => {prev.splice(projectIndex, 1); return [...prev]});
                         setViewProject(-1); 
+                        storeData('projects', (await getData('projects')).toSpliced(projectIndex, 1));
                     }
                 }
             ]
@@ -97,6 +97,7 @@ export default function Projects() {
                         const updatedProject = projectList[viewProject]
                         updatedProject[itemType][index].done = value
                         updateProjectlist(updatedProject, viewProject)
+                        setEditProject(-1);
                     }}
                     deleteProject={() => handleProjectDeletion(viewProject)}
                 />) :

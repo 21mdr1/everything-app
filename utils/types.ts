@@ -1,4 +1,4 @@
-type paths = '/daily' | '/weekly' | '/projects' | '/' | '/storage' | '/packing' | '/visionBoard';
+type paths = '/daily' | '/weekly' | '/projects' | '/' //| '/storage' | '/packing' | '/visionBoard';
 
 interface screen {
     name: string;
